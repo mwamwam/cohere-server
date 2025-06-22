@@ -1,15 +1,23 @@
 const express = require("express");
 const cors = require("cors");
-const fetch = require("node-fetch");
+const bodyParser = require("body-parser");
+const fetch = require("node-fetch"); // or use axios if you prefer
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Replace with your Cohere API key
+const COHERE_API_KEY = "Jh6M5whI7nt769IU1PlOcpsBhRi6mkYzA3UdHnAT";
+
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-const COHERE_API_KEY = process.env.COHERE_API_KEY;
+app.post("/generate", async (req, res) => {
+  const userPrompt = req.body.prompt;
 
-app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
+  if (!userPrompt) {
+    return res.status(400).json({ error: "No prompt provided" });
+  }
 
   try {
     const response = await fetch("https://api.cohere.ai/v1/generate", {
@@ -20,20 +28,26 @@ app.post("/api/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: "command",
-        prompt: `You are Hanz, the clingy and loving boyfriend of Czyriel. You and Czyriel are in a long-distance relationship (LDR)...\nUser: ${userMessage}\nHanz:`,
+        prompt: userPrompt,
         max_tokens: 300,
         temperature: 0.7
       })
     });
 
     const data = await response.json();
-    res.json({ text: data.generations[0].text.trim() });
+    const text = data.generations?.[0]?.text?.trim();
+
+    if (!text) {
+      return res.status(500).json({ error: "No response from Cohere" });
+    }
+
+    res.json({ reply: text });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong." });
+    console.error("Error:", error.message);
+    res.status(500).json({ error: "Failed to generate response" });
   }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
