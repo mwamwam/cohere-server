@@ -60,7 +60,7 @@ ${userMessage}`;
     const text = data.generations?.[0]?.text?.trim();
 
     if (!text) {
-      return res.status(500).json({ error: "No response from Cohere" });
+      return res.status(500).json({ error: "No response from Hanz" });
     }
 
     res.json({ reply: text });
