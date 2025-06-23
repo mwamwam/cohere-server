@@ -71,7 +71,7 @@ ${userMessage}`;
 });
 
 app.get("/", (req, res) => {
-  res.send("Cohere bot server for Czyriel is running!");
+  res.send("Hanz bot server for Czyriel is running!");
 });
 
 app.listen(PORT, () => {
