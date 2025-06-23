@@ -49,7 +49,7 @@ ${userMessage}`;
       body: JSON.stringify({
         model: "command",
         prompt: prompt,
-        max_tokens: 60,
+        max_tokens: 300,
         temperature: 0.4,
       })
     });
